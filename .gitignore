@@ -1,6 +1,32 @@
+# Maven (multi-module: pom.xml, gateway/, backend/)
 target/
-*.log
-*.bin
+!.mvn/wrapper/maven-wrapper.jar
+
+# JVM crash / diagnostic output — likely here given the OOM-boundary testing
+hs_err_pid*.log
+replay_pid*.log
+
+# IDEs
 .idea/
+*.iws
 *.iml
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+bin/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs and local-only config/secrets
+*.log
+application-local.yml
+application-local.properties
+.env
+
+# Demo artifacts (run-demo.sh generates its test file under mktemp, but just in case)
+*.bin
