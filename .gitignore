@@ -30,3 +30,6 @@ application-local.properties
 
 # Demo artifacts (run-demo.sh generates its test file under mktemp, but just in case)
 *.bin
+
+# `make start` PID/log files
+.run/
