@@ -1,0 +1,16 @@
+server:
+  port: 8081
+  tomcat:
+    # We fully consume every request body, but disable the swallow cap anyway so
+    # nothing about large bodies is second-guessed by the connector.
+    max-swallow-size: -1
+
+spring:
+  application:
+    name: backend
+  servlet:
+    multipart:
+      # This demo uploads a raw binary body (application/octet-stream), not a
+      # multipart form, so no multipart parsing is needed. Disabling it keeps
+      # the read path a plain streaming InputStream.
+      enabled: false

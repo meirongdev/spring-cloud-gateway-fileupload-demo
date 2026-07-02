@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway
+  servlet:
+    multipart:
+      # The gateway is a pure proxy: never let Spring parse/buffer a multipart
+      # body here. The raw request stream is forwarded as-is.
+      enabled: false
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
