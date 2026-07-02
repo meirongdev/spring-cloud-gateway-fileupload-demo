@@ -13,3 +13,15 @@ spring:
 logging:
   level:
     org.springframework.cloud.gateway: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # Demo only — exposes internals over unauthenticated HTTP. Do NOT do this in prod.
+        include: health,info,env,beans,mappings,configprops,conditions,metrics,loggers
+  endpoint:
+    env:
+      show-values: always      # show real values instead of "******" (demo convenience)
+    configprops:
+      show-values: always

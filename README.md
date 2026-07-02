@@ -63,7 +63,7 @@
 
 ## 运行
 
-需要 JDK 17+（本机 JDK 25 亦可；工程按 Java 21 编译）与 Maven。
+需要 JDK 25 与 Maven（工程编译目标为 Java 25）。
 
 ### 一键验证
 
@@ -90,6 +90,23 @@ curl -X POST -T /tmp/big.bin -H "Content-Type: application/octet-stream" \
      http://localhost:8080/upload
 ```
 
+## Actuator 端点
+
+两个服务都引入了 `spring-boot-starter-actuator`，并暴露了一组端点（demo 用，勿在生产
+对公网开放）：
+
+```bash
+# 网关 (:8080)
+curl -s localhost:8080/actuator | python3 -m json.tool   # 端点清单
+curl -s localhost:8080/actuator/env    | python3 -m json.tool
+curl -s localhost:8080/actuator/beans  | python3 -m json.tool
+# 后端 (:8081) 同理，把端口换成 8081
+```
+
+暴露的端点：`health,info,env,beans,mappings,configprops,conditions,metrics,loggers`。
+`env` / `configprops` 设了 `show-values: always`，直接显示真实值而非 `******`（仅
+本地 demo 方便查看）。
+
 ## 说明与生产建议
 
 - **HTTP 客户端可替换**：往 gateway 依赖里加入 Apache HttpClient 5
@@ -114,4 +131,4 @@ curl -X POST -T /tmp/big.bin -H "Content-Type: application/octet-stream" \
 | Spring Boot | 3.5.16 |
 | Spring Cloud | 2025.0.3 |
 | Gateway starter | `spring-cloud-starter-gateway-server-webmvc` (Gateway 4.2.x) |
-| Java (编译目标) | 21 |
+| Java (编译目标) | 25 |
