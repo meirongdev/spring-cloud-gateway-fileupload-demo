@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway413-config
+  namespace: demo413
+data:
+  BACKEND_URL: http://backend413:8081

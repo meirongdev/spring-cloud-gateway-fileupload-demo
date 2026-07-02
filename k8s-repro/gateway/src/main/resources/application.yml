@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway413
+  # Deliberately NO spring.servlet.multipart block — matching the production
+  # gateway's application.yml, which has none either. Spring Boot's
+  # multipart autoconfiguration stays on with its defaults (max-file-size=1MB,
+  # max-request-size=10MB) purely because nobody disabled or resized it, even
+  # though this app is meant to be a byte-for-byte proxy that never reads
+  # multipart content itself.
+
+logging:
+  level:
+    # Surface the exact log line from the production report ("Completed 413
+    # PAYLOAD_TOO_LARGE", logger o.s.web.servlet.DispatcherServlet) — it's a
+    # DEBUG-level FrameworkServlet line. Note the gateway logs it even when it
+    # merely PROXIES a downstream 413, so the line alone can't identify which
+    # service generated the status.
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,beans,conditions

@@ -1,0 +1,33 @@
+# A naked Pod wearing the backend413 Service label, so the Service's endpoint
+# list becomes 3 pods of which THIS one enforces a 1MB multipart cap.
+# Stands in for "one of the three backend pods behaves differently"
+# (older generation / env drift). A bare Pod (no Deployment) deliberately:
+# the backend413 ReplicaSet can't adopt it (its selector includes
+# pod-template-hash), but the Service selector (app=backend413) matches it.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: strict-peer413
+  namespace: demo413
+  labels:
+    app: backend413
+    variant: strict
+spec:
+  containers:
+    - name: backend413
+      image: backend413:local
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: SPRING_SERVLET_MULTIPART_MAXFILESIZE
+          value: 1MB
+        - name: SPRING_SERVLET_MULTIPART_MAXREQUESTSIZE
+          value: 1MB
+      ports:
+        - containerPort: 8081
+      readinessProbe:
+        httpGet:
+          path: /actuator/health
+          port: 8081
+        initialDelaySeconds: 3
+        periodSeconds: 2
+        failureThreshold: 15

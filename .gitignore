@@ -33,3 +33,7 @@ application-local.properties
 
 # `make start` PID/log files
 .run/
+
+# k8s-repro load-test run artifacts (tally files tee'd by the repro scripts)
+k8s-repro/.phase-*
+k8s-repro/.bff-*

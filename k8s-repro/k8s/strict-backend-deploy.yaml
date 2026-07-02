@@ -1,0 +1,49 @@
+# Same backend413 image, but with a 1MB multipart cap via env overrides.
+# Stands in for "whatever different downstream the drifted routing env points
+# at" — e.g. a service still on Spring Boot's default limits (1MB), an old
+# deployment, or a proxy with a small client_max_body_size.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strict-backend413
+  namespace: demo413
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: strict-backend413
+  template:
+    metadata:
+      labels:
+        app: strict-backend413
+    spec:
+      containers:
+        - name: strict-backend413
+          image: backend413:local
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SPRING_SERVLET_MULTIPART_MAXFILESIZE
+              value: 1MB
+            - name: SPRING_SERVLET_MULTIPART_MAXREQUESTSIZE
+              value: 1MB
+          ports:
+            - containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 3
+            periodSeconds: 2
+            failureThreshold: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: strict-backend413
+  namespace: demo413
+spec:
+  selector:
+    app: strict-backend413
+  ports:
+    - port: 8081
+      targetPort: 8081

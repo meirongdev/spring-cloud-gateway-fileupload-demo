@@ -1,0 +1,30 @@
+server:
+  port: 8081
+  http2:
+    # Mirrors SERVER_HTTP2_ENABLED="true" set for the production upload backend
+    # (and most services) via the environment ConfigMap — h2c on the plain
+    # in-cluster port.
+    enabled: true
+
+spring:
+  application:
+    name: backend413
+  servlet:
+    multipart:
+      # Mirrors the production upload service's application.yaml: an explicit,
+      # intentional business limit for the actual file-processing service —
+      # files up to 10MB are meant to be accepted.
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+logging:
+  level:
+    # Same DEBUG line as the production report — a 413 here logs
+    # "Completed 413 PAYLOAD_TOO_LARGE" with logger o.s.web.servlet.DispatcherServlet.
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

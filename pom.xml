@@ -26,6 +26,7 @@
     <modules>
         <module>backend</module>
         <module>gateway</module>
+        <module>k8s-repro</module>
     </modules>
 
     <dependencyManagement>

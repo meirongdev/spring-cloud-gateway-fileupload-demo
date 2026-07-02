@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.example</groupId>
+        <artifactId>k8s-repro</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>gateway413</artifactId>
+    <name>gateway413</name>
+    <description>
+        Stand-in for the production gateway. Spring Cloud Gateway Server MVC with
+        NO spring.servlet.multipart.* configuration at all, matching the real
+        gateway's application.yml — Spring Boot's multipart defaults
+        (max-file-size=1MB, max-request-size=10MB) stay active even though this
+        app never means to parse multipart content; it only proxies.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway-server-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>app</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- The FIX under test: with Apache HttpClient 5 on the classpath,
+             Spring Cloud Gateway Server MVC auto-prefers it over the JDK
+             HttpClient. HC5 (classic) speaks plain HTTP/1.1 downstream and
+             never attempts an h2c upgrade, so cold-connection uploads can't
+             trip Tomcat's maxSavePostSize 413. Build with: mvn -Phc5 package -->
+        <profile>
+            <id>hc5</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.httpcomponents.client5</groupId>
+                    <artifactId>httpclient5</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>

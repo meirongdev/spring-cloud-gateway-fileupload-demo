@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway413
+  namespace: demo413
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway413
+  template:
+    metadata:
+      labels:
+        app: gateway413
+    spec:
+      containers:
+        - name: gateway413
+          image: gateway413:local
+          imagePullPolicy: IfNotPresent
+          # Mirrors the production gateway deployment: routing URLs come
+          # from envFrom (configMapRef + secretRef there). envFrom values are
+          # resolved ONCE at container start — a pod keeps whatever the
+          # ConfigMap/Secret said when IT started, so pods created at different
+          # times can silently run with different routing env.
+          envFrom:
+            - configMapRef:
+                name: gateway413-config
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 2
+            failureThreshold: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway413
+  namespace: demo413
+spec:
+  selector:
+    app: gateway413
+  ports:
+    - port: 8080
+      targetPort: 8080
